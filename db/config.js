@@ -22,7 +22,8 @@ const SongSchema = new Schema({
   upVoteCount: {type: Number, default: 1},
   downVoteCount: {type: Number, default: 0},
   netVoteCount: Number,
-  duration_ms: Number
+  duration_ms: Number,
+  partyCode: String
 });
 
 const UserSchema = new Schema({
@@ -31,8 +32,15 @@ const UserSchema = new Schema({
   votedSongs: Array
 });
 
+const PartySchema = new Schema({
+  partyCode: String,
+  partyHost: String,
+  token: String
+});
+
 const Song = mongoose.model('song', SongSchema);
 const User = mongoose.model('user', UserSchema);
+const Party = mongoose.model('party', PartySchema);
 
 // new Song({name: 'Stupid La Love Song', artist: 'The Palms',
 //   image: '',
@@ -62,3 +70,4 @@ const User = mongoose.model('user', UserSchema);
 module.exports.mongoose = mongoose;
 module.exports.song = Song;
 module.exports.user = User;
+module.exports.party = Party;
