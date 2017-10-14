@@ -30,6 +30,7 @@ app.use(express.static(__dirname + '/public'));
 const Db = require('./db/config').mongoose;
 const User = require('./db/config').user;
 const Song = require('./db/config').song;
+const Party = require('./db/config').party;
 
 // *** Parser ***
 const bodyParser = require('body-parser');
@@ -47,9 +48,8 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// *** Helper ***
+// *** Helpers ***
 const spotifyHelpers = require('./helpers/spotifyHelpers.js');
-const tokens = spotifyHelpers.tokens;
 
 
 // *** Server ***
@@ -67,10 +67,10 @@ app.get('/hostInfo', (req, res) => {
 });
 // fetch song research results and send to client
 app.get('/songs/search', (req, res) => {
-  spotifyHelpers.getTrackSearchResults(req.query.query)
-  .then((results) => {
-      res.json(results);
-    });
+  spotifyHelpers.getTrackSearchResults(req, res, req.query.query)
+  // .then((results) => {
+  //     res.json(results);
+  //   });
 });
 app.get('/hostPlaylists', (req, res) => {
   spotifyHelpers.getHostPlaylists(req, res);
@@ -81,7 +81,7 @@ app.get('/currentlyPlaying', (req, res) => {
 });
 
 app.get('/playlistSongs', (req, res) => {
-  spotifyHelpers.getPlaylistSongs(req.query, res);
+  spotifyHelpers.getPlaylistSongs(req, res);
 })
 
 // Host Authentication
@@ -105,38 +105,46 @@ app.post('/createNewPlaylist', (req, res) => {
 
 // fetch top 50 songs by netVoteCount from songs collection and send to client
 app.get('/songs', (req, res) => {
-  Song.find({}).sort({netVoteCount: 'descending'}).limit(50)
+
+  Song.find({partyCode: req.query.partyCode}).sort({netVoteCount: 'descending'})
   .then((songs) => {
-    res.json(songs);
+    res.send(songs);
   });
+  // Song.find({}).sort({netVoteCount: 'descending'}).limit(50)
+  // .then((songs) => {
+  //   res.json(songs);
+  // });
 });
 
 // add song to both user collection and songs collection
 app.post('/songs', (req, res) => {
-  var newSong = new Song({
-    name: req.body.name,
-    image: req.body.image,
-    link: req.body.link,
-    userName: req.body.userName,
-    artist: req.body.artist,
-    duration: req.body.duration
-  });
-  User.findOne({name: req.body.userName})
-  .then((user) => {
-    if (user) {
-      user.addedSongs.push(newSong);
-      user.save();
-      return newSong.save();
-    }
-  })
-  .then(() => {
-    res.sendStatus(201);
-  });
+
+  var songsToAdd = req.body.songs;
+  var partyCode = req.body.partyCode;
+  var userName = req.body.userName;
+  for (var i = 0 ; i < songsToAdd.length ; i++) {
+    var song = songsToAdd[i].track;
+
+    new Song({
+      name: song.name,
+      artist: song.artists[0].name,
+      image: song.album.images[1].url,
+      link: song.external_urls.spotify,
+      upVoteCount: 1,
+      downVoteCount: 0,
+      netVoteCount: 1,
+      duration_ms: song.duration_ms,
+      userName: userName,
+      partyCode: partyCode
+    }).save();
+  }
+  res.sendStatus(201);
 });
 
 // update vote on songs collection
 app.put('/song', (req, res) => {
-  Song.findOne({name: req.body.name})
+  console.log('song to vote:', req.body);
+  Song.findOne({name: req.body.name, partyCode: req.body.partyCode})
   .then(function(song) {
     if (song) {
       if(req.body.vote > 0) {
@@ -144,6 +152,7 @@ app.put('/song', (req, res) => {
       } else {
         song.downVoteCount++;
       }
+      song.netVoteCount = song.upVoteCount - song.downVoteCount;
       song.save();
       res.sendStatus(201);
     }
@@ -157,6 +166,38 @@ app.delete('/song', (req, res) => {
     if (err) { console.log(err); }
   });
   res.sendStatus(201);
+});
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  ROUTES to ACCESS DATABASE PARTY COLLECTION
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+//Look up party via party code
+app.get('/party', (req,res) => {
+  Party.find({partyCode: req.body.partyCode})
+    .then((party) => {
+      res.json(party);
+    })
+});
+
+//Create new party
+app.post('/party', (req,res) => {
+
+  var newParty = new Party({
+    partyCode: req.body.partyCode,
+    partyHost: req.body.partyHost
+  });
+  Party.findOne({partyCode: req.body.partyCode})
+    .then((party) => {
+    if(!party) {
+      newParty.save()
+        .then(() => {
+        res.sendStatus(201);
+        });
+    } else {
+      res.send("Party already exists!");
+    }
+    })
+
 });
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * *

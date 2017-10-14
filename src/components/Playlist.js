@@ -11,6 +11,7 @@ const Playlist = (props) => {
           <PlaylistEntry key={i} position={i} downVote={props.downVote} handlePlay={props.handlePlayButtonClick} upVote={props.upVote} song={song}/>
         )})
       }
+
     </div>
   );
 }

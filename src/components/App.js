@@ -5,7 +5,7 @@ import Container from './Container';
 
 const App = (props) => {
   return (
-    <div>
+    <div className='app'>
       <Header />
       <Container />
     </div>
