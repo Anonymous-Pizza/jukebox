@@ -26,7 +26,6 @@ class Party extends React.Component {
       interval: null,
       playlists: '',
       guestName: null,
-
       searchList:null
     }
 
