@@ -1,20 +1,18 @@
 # JukeBox App
 
 A viewable, dynamic, interactive song playlist application.
-
-## Legacy Team
-
- - __API__: Nick Havens
- - __Front-end__: Jessica D'Andrea
- - __Server__: Joey Li / Vasanth Kesavan
- - __Database__: Joey Li / Vasanth Kesavan
- - __Deployment__: Nick Havens
-
  ## Version 2 Team
  - Bella Tea
  - Candice Lai
  - Harsh Sikka
  - Steve Rodriguez
+
+## Legacy Team
+ - __API__: Nick Havens
+ - __Front-end__: Jessica D'Andrea
+ - __Server__: Joey Li / Vasanth Kesavan
+ - __Database__: Joey Li / Vasanth Kesavan
+ - __Deployment__: Nick Havens
 
 ## Table of Contents
 
