@@ -2,13 +2,19 @@
 
 A viewable, dynamic, interactive song playlist application.
 
-## Team
+## Legacy Team
 
  - __API__: Nick Havens
  - __Front-end__: Jessica D'Andrea
  - __Server__: Joey Li / Vasanth Kesavan
  - __Database__: Joey Li / Vasanth Kesavan
  - __Deployment__: Nick Havens
+
+ ## Version 2 Team
+ - Bella Tea
+ - Candice Lai
+ - Harsh Sikka
+ - Steve Rodriguez
 
 ## Table of Contents
 
@@ -45,6 +51,9 @@ In order to play a song, the user must be logged in as host. To read more about 
 ### Logging in as host
 For the song player to work you must click on 'Login as Host' and log into Spotify with a premium account. You will remain logged in for the session depending on your browser settings. Spotify Oath is used for host login and the redirect url for the development and production environments must be stored in the developers Spotify API account https://developer.spotify.com/my-applications/#!/applications.
 
+### Join a party
+Given a unique party code by a host, a guest user may join an already created pizza party playlist to contribute. Contributions can be made with song suggestions as well as upvote and down voting previously suggested songs as themselves or anonymously.
+
 ## Environment
 The project uses a gitignored file called env/credentials.js to supply the Spotify API keys as well as the redirect url and production env variable. Fill in your information to credentials.example.js and remove 'example' from the filename for the API and Webpack
 environment to function correctly
@@ -61,7 +70,7 @@ From within the root directory:
 
 ```sh
 npm install
-nodemon server.js
+npm start
 ```
 
 ## Contributing
